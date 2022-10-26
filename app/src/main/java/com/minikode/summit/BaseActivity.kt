@@ -10,6 +10,7 @@ abstract class BaseActivity<View : ViewDataBinding> : AppCompatActivity() {
 
     protected lateinit var binding: View
     protected abstract val layoutRes: Int
+    protected abstract val requestCode: Int
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
