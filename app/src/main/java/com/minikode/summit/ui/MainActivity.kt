@@ -445,6 +445,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         return Math.round(ret) // 미터 단위
     }
 
+    private fun calBear(lat1: Double, lon1: Double, lat2: Double, lon2: Double) {
+        // https://tttsss77.tistory.com/177 참고하기
+    }
+
     companion object {
         private const val TAG = "MainActivity"
     }
