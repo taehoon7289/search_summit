@@ -30,6 +30,14 @@
                 android:layout_centerInParent="true"
                 android:src="@mipmap/ic_launcher" />
 
+            <ImageView
+                android:id="@+id/arrow"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:layout_above="@id/android"
+                android:src="@drawable/ic_action_arrow" />
+
         </RelativeLayout>
 
         <Button
@@ -92,6 +100,53 @@
                 android:id="@+id/text_view_bearing2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/text_view_degree"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout_direction"
+            app:layout_constraintTop_toBottomOf="@id/linear_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/first"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_action_arrow"/>
+
+            <ImageView
+                android:id="@+id/second"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_action_arrow"/>
+
+            <ImageView
+                android:id="@+id/third"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_action_arrow"/>
+
+            <ImageView
+                android:id="@+id/fourth"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_action_arrow"/>
+
+            <ImageView
+                android:id="@+id/fifth"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_action_arrow"/>
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

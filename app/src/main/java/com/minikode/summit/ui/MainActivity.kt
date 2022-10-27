@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener2
@@ -15,8 +17,11 @@ import android.os.Build
 import android.os.CancellationSignal
 import android.os.Looper
 import android.util.Log
+import android.view.Surface
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -37,8 +42,8 @@ import com.minikode.summit.BaseActivity
 import com.minikode.summit.R
 import com.minikode.summit.databinding.ActivityMainBinding
 import com.minikode.summit.vo.SummitInfoVo
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
+
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
     override val layoutRes: Int = R.layout.activity_main
@@ -47,6 +52,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 
     override fun initView() {
+
+        parseJson()
+
+        binding.arrow.imageTintList = ColorStateList.valueOf(Color.parseColor("#FF0000"))
 
         // 화면 켜진 상태 유지
         window.setFlags(
@@ -82,6 +91,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
 //        bindGravitySensor()
 //        parseJson()
+        bindMagnetSensorAndAccelerSensor()
 
     }
 
@@ -97,6 +107,129 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
         binding.previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
         binding.previewView.scaleType = PreviewView.ScaleType.FILL_CENTER
+
+    }
+
+    lateinit var magenetSensor: Sensor
+    lateinit var accelerSensor: Sensor
+
+    var mLastAccelerometer: FloatArray = FloatArray(3)
+    var mLastMagnetometer: FloatArray = FloatArray(3)
+    var mR: FloatArray = FloatArray(9)
+    var mI: FloatArray = FloatArray(9)
+    var mOrientation: FloatArray = FloatArray(3)
+    var mLastAccelerometerSet = false
+    var mLastMagnetometerSet = false
+
+    fun bindMagnetSensorAndAccelerSensor() {
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        magenetSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        accelerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        sensorManager.registerListener(object : SensorEventListener2 {
+            override fun onSensorChanged(event: SensorEvent?) {
+                onSensorChangeEventLambda(event)
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+                Log.d(TAG, "onAccuracyChanged: ")
+            }
+
+            override fun onFlushCompleted(sensor: Sensor?) {
+                Log.d(TAG, "onFlushCompleted: ")
+            }
+
+        }, accelerSensor, SensorManager.SENSOR_DELAY_UI)
+        sensorManager.registerListener(object : SensorEventListener2 {
+            override fun onSensorChanged(event: SensorEvent?) {
+                onSensorChangeEventLambda(event)
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+                Log.d(TAG, "onAccuracyChanged: ")
+            }
+
+            override fun onFlushCompleted(sensor: Sensor?) {
+                Log.d(TAG, "onFlushCompleted: ")
+            }
+
+        }, magenetSensor, SensorManager.SENSOR_DELAY_UI)
+    }
+
+    var currentDegree = 0f // 현재 북쪽
+
+    val onSensorChangeEventLambda: (SensorEvent?) -> Unit = {
+
+        it?.let {
+            if (it.sensor == accelerSensor) {
+                mLastAccelerometer = it.values.clone()
+                mLastAccelerometerSet = true
+            } else if (it.sensor == magenetSensor) {
+                mLastMagnetometer = it.values.clone()
+                mLastMagnetometerSet = true
+            }
+
+            if (mLastAccelerometerSet && mLastMagnetometerSet) {
+
+                var azimuth = 0.0
+                var pitch = 0.0
+                var roll = 0.0
+
+                SensorManager.getRotationMatrix(mR, mI, mLastAccelerometer, mLastMagnetometer)
+
+                val inclination = SensorManager.getInclination(mI)
+
+                SensorManager.getOrientation(mR, mOrientation)
+
+                azimuth = Math.toDegrees(mOrientation[0].toDouble()) // 방위값(-180 ~ +180)
+                pitch = Math.toDegrees(mOrientation[1].toDouble())
+                roll = Math.toDegrees(mOrientation[2].toDouble())
+
+                val rotate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    display?.rotation
+                } else {
+                    windowManager.defaultDisplay.rotation
+                }
+
+                when (rotate) {
+                    Surface.ROTATION_0 -> {
+//                        Log.d(TAG, "ROTATION_0: ")
+                    }
+                    Surface.ROTATION_90 -> { // 반시계방향 가로
+//                        Log.d(TAG, "ROTATION_90: ")
+                        azimuth += 90
+                    }
+                    Surface.ROTATION_270 -> { // 시계방향 가로
+//                        Log.d(TAG, "ROTATION_270: ")
+                        azimuth -= 90
+                    }
+                    else -> {
+//                        Log.d(TAG, "ROTATION_else: ")
+                    }
+                }
+
+//                Log.d(TAG, "azimuth: $azimuth")
+
+                if (azimuth < 0) {
+                    azimuth += 360
+                }
+
+
+                val rotateAnnotation = RotateAnimation(
+                    -azimuth.toFloat(),
+                    currentDegree,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f,
+                )
+
+                rotateAnnotation.duration = 250
+                rotateAnnotation.fillAfter = true
+                binding.arrow.startAnimation(rotateAnnotation)
+                currentDegree = (-azimuth).toFloat()
+//                binding.arrow.rotation = (-azimuth).toFloat()
+                binding.textViewDegree.text = azimuth.toString()
+
+            }
+        }
 
     }
 
@@ -300,7 +433,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             binding.textViewLongitude2.text = longitude2.toString()
             binding.textViewAltitude2.text = altitude2.toString()
             binding.textViewBearing2.text = bearing2.toString()
-            parseJson()
+            drawArrow()
         }
 
     }
@@ -399,6 +532,61 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     }
 
+    fun drawArrow() {
+        for (summitInfoVo in summitInfoVoList) {
+            val distance = calDist(latitude2, longitude2, summitInfoVo.lati!!, summitInfoVo.longi!!)
+            Log.d(TAG, "parseJson: name: ${summitInfoVo.name}")
+            Log.d(TAG, "parseJson: distance ${distance}")
+
+
+            var degree = calBearing(
+                latitude2,
+                longitude2,
+                summitInfoVo.lati!!,
+                summitInfoVo.longi!!,
+            )
+            Log.d(
+                TAG,
+                "parseJson: 현재위치에서 방향 각도 ${
+                    degree
+                }"
+            )
+
+//            if (degree < 0) {
+//                degree += 360
+//            }
+
+//            Log.d(TAG, "parseJson: currentDegree $currentDegree")
+            Log.d(TAG, "parseJson: -------------------------------------")
+
+            degree += currentDegree // 현재 북쪽으로 각도를 추가
+
+//            if (degree < 0) {
+//                degree += 360
+//            }
+
+            val rotateAnnotation = RotateAnimation(
+                summitInfoVo.computedDegree,
+                degree.toFloat(),
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+            )
+
+            rotateAnnotation.duration = 250
+            rotateAnnotation.fillAfter = true
+            summitInfoVo.computedDegree = degree.toFloat()
+
+            val id = resources.getIdentifier(summitInfoVo.id, "id", packageName)
+            val imageView = findViewById(id) as ImageView
+
+            imageView.startAnimation(rotateAnnotation)
+
+
+        }
+    }
+
+    private var summitInfoVoList: MutableList<SummitInfoVo> = mutableListOf()
+
     fun parseJson() {
 //        val inputStream = assets.open("data.json")
 //        val inputStreamReader = InputStreamReader(inputStream)
@@ -417,17 +605,34 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 //        Log.d(TAG, "parseJson: jsonArray $jsonArray")
 
         val gson = Gson()
-        val list = gson.fromJson<MutableList<SummitInfoVo>>(
+        summitInfoVoList = gson.fromJson<MutableList<SummitInfoVo>>(
             jsonString,
             object : TypeToken<MutableList<SummitInfoVo>>() {}.type
         )
-        Log.d(TAG, "parseJson: list $list")
+        Log.d(TAG, "parseJson: list $summitInfoVoList")
+    }
 
-        for (summitInfoVo in list) {
-            val distance = calDist(latitude2, longitude2, summitInfoVo.lati!!, summitInfoVo.longi!!)
-            Log.d(TAG, "parseJson: name: ${summitInfoVo.name}")
-            Log.d(TAG, "parseJson: distance ${distance}")
-        }
+    private fun calBearing(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+//        val y = lon2 - lon1
+//        val x = lat2 - lat1
+//        val radian = Math.atan2(y, x)
+//        val degree = radian.times(180).div(Math.PI)
+//        return degree
+
+        val pi1 = lat1.times(Math.PI).div(180)
+        val pi2 = lat2.times(Math.PI).div(180)
+        val lambda1 = lon1.times(Math.PI).div(180)
+        val lambda2 = lon2.times(Math.PI).div(180)
+
+        val y = sin(lambda2.minus(lambda1)).times(Math.cos(pi2))
+        val x = cos(pi1).times(sin(pi2))
+            .minus((sin(pi1).times(cos(pi2).times(cos(lambda2.minus(lambda1))))))
+
+        val theta = atan2(y, x)
+        val bearing = (theta.times(180).div(Math.PI).plus(360)).mod(360.0)
+        Log.d(TAG, "calBearing: theta $theta")
+        return bearing
+
 
     }
 
@@ -454,4 +659,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
 
 
+    override fun onPause() {
+        super.onPause()
+    }
 }
