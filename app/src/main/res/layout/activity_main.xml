@@ -105,6 +105,17 @@
                 android:id="@+id/text_view_degree"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/text_view_rotation_azimuch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/text_view_rotation_pitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
 
         <LinearLayout

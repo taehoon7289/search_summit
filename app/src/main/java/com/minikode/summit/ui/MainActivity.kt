@@ -10,6 +10,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener2
 import android.hardware.SensorManager
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
@@ -92,6 +94,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 //        bindGravitySensor()
 //        parseJson()
         bindMagnetSensorAndAccelerSensor()
+        bindRotationVectorSensor()
 
     }
 
@@ -105,21 +108,45 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
         var camera = cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview)
 
+
         binding.previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
         binding.previewView.scaleType = PreviewView.ScaleType.FILL_CENTER
+
+        calculateFov()
 
     }
 
     lateinit var magenetSensor: Sensor
     lateinit var accelerSensor: Sensor
+    lateinit var rotationSensor: Sensor
 
     var mLastAccelerometer: FloatArray = FloatArray(3)
     var mLastMagnetometer: FloatArray = FloatArray(3)
+    var mLastRotationVector: FloatArray = FloatArray(4)
     var mR: FloatArray = FloatArray(9)
     var mI: FloatArray = FloatArray(9)
     var mOrientation: FloatArray = FloatArray(3)
     var mLastAccelerometerSet = false
     var mLastMagnetometerSet = false
+    var mLastRotationSet = false
+
+    fun bindRotationVectorSensor() {
+        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+        sensorManager.registerListener(object : SensorEventListener2 {
+            override fun onSensorChanged(event: SensorEvent?) {
+                onSensorChangeEventLambda(event)
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+                Log.d(TAG, "onAccuracyChanged: ")
+            }
+
+            override fun onFlushCompleted(sensor: Sensor?) {
+                Log.d(TAG, "onFlushCompleted: ")
+            }
+        }, rotationSensor, SensorManager.SENSOR_DELAY_UI)
+    }
 
     fun bindMagnetSensorAndAccelerSensor() {
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -166,6 +193,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             } else if (it.sensor == magenetSensor) {
                 mLastMagnetometer = it.values.clone()
                 mLastMagnetometerSet = true
+            } else if (it.sensor == rotationSensor) {
+                mLastRotationVector = it.values.clone()
+                mLastRotationSet = true
             }
 
             if (mLastAccelerometerSet && mLastMagnetometerSet) {
@@ -229,9 +259,71 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
                 binding.textViewDegree.text = azimuth.toString()
 
             }
+            if (mLastRotationSet) {
+                val rotationMatrix = FloatArray(9)
+
+                SensorManager.getRotationMatrixFromVector(rotationMatrix, mLastRotationVector)
+
+                val axisX = SensorManager.AXIS_X
+
+                val axisZ = SensorManager.AXIS_Z
+
+                val adjustedRotationMatrix = FloatArray(9)
+
+                SensorManager.remapCoordinateSystem(
+                    rotationMatrix,
+                    axisX,
+                    axisZ,
+                    adjustedRotationMatrix
+                )
+
+                val orientation = FloatArray(3)
+
+                SensorManager.getOrientation(adjustedRotationMatrix, orientation)
+
+                var azimuch: Float = orientation[0] * 57
+
+                val pitch: Float = orientation[1] * 57
+
+                val roll: Float = orientation[2] * 57
+
+                Log.d(TAG, "mLastRotationSet: azimuch $azimuch")
+                Log.d(TAG, "mLastRotationSet: pitch $pitch")
+                Log.d(TAG, "mLastRotationSet: roll $roll")
+//                if (azimuch < 0) {
+//                    azimuch = abs(azimuch)
+//                } else {
+//                    azimuch = 360 - azimuch
+//                }
+                if (azimuch < 0) {
+                    azimuch += 360
+                }
+                if (Math.abs(pitch) < 55) {    //눕혀있는 경우에는 화면 상태가 어렵다고 판단되어 특정 각도 내에서만 작동하도록 함.
+                    binding.textViewRotationAzimuch.text = azimuch.toString()
+                }
+                binding.textViewRotationPitch.text = pitch.toString()
+
+
+            }
         }
 
     }
+
+//    fun calculateOrientation(roll: Int, pitch: Int) {
+//        if((-120 < roll && roll < -60) || (60 < roll && roll <120)){
+//
+//            return "LANDSCAPE " + roll + "/" + pitch;
+//
+//        }else if(( -30 < roll && roll < 30) || (150 < roll && roll < 180) || (-180 < roll && roll < -150)){
+//
+//            return "PORTRAIT " + roll + "/" + pitch;
+//
+//        }else{
+//
+//            return "UNKNOWN " + roll + "/" + pitch;
+//
+//        }
+//    }
 
     fun bindGravitySensor() {
         // 중력센서
@@ -662,4 +754,38 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun onPause() {
         super.onPause()
     }
+
+
+    private var horizonalAngle: Float = 0f
+    private var verticalAngle: Float = 0f
+
+    private fun calculateFov() {
+        val cManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
+
+        for (cameraId in cManager.cameraIdList) {
+            val characteristics = cManager.getCameraCharacteristics(cameraId)
+            val cOrientation = characteristics.get(CameraCharacteristics.LENS_FACING)
+            if (cOrientation == CameraCharacteristics.LENS_FACING_BACK) {
+                val maxFocus =
+                    characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
+                val size = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                val w = size?.width
+                val h = size?.height
+                maxFocus?.let {
+                    if (w != null) {
+                        horizonalAngle = (2 * atan(w.div(maxFocus[0].times(2))))
+                    }
+                    if (h != null) {
+                        verticalAngle = (2 * atan(h.div(maxFocus[0].times(2))))
+                    }
+
+                    Log.d(TAG, "calculateFov: horizonalAngle $horizonalAngle")
+                    Log.d(TAG, "calculateFov: verticalAngle $verticalAngle")
+                }
+
+            }
+        }
+
+    }
+
 }
