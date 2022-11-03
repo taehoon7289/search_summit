@@ -35,6 +35,12 @@
             android:layout_height="wrap_content"
             android:text="@{String.valueOf(model.distance)}"
             android:textSize="12sp" />
+        <TextView
+            android:id="@+id/text_view_degree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(model.degree)}"
+            android:textSize="10sp" />
 
 
     </LinearLayout>

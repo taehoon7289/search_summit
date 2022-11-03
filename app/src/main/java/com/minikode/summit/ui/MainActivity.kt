@@ -7,6 +7,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener2
 import android.hardware.SensorManager
+import android.location.Location
 import android.os.Build
 import android.util.Log
 import android.view.Surface
@@ -18,9 +19,11 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
+import com.minikode.summit.App
 import com.minikode.summit.BaseActivity
 import com.minikode.summit.R
 import com.minikode.summit.databinding.ActivityMainBinding
+import com.minikode.summit.repository.AzimuthRepository
 import com.minikode.summit.ui.list.ListViewModel
 import com.minikode.summit.util.Util
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,22 +49,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             )
         )
 
-        bindMagneticSensorAndAccelerometerSensor()
+//        bindMagneticSensorAndAccelerometerSensor()
     }
 
     lateinit var magneticSensor: Sensor
     lateinit var accelerometerSensor: Sensor
 
-    var mLastAccelerometer: FloatArray = FloatArray(3)
-    var mLastMagnetometer: FloatArray = FloatArray(3)
-    var mR: FloatArray = FloatArray(9)
-    var mI: FloatArray = FloatArray(9)
-    var mOrientation: FloatArray = FloatArray(3)
-    var mLastAccelerometerSet = false
-    var mLastMagnetometerSet = false
-
-    private fun bindMagneticSensorAndAccelerometerSensor() {
-        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    fun bindMagneticSensorAndAccelerometerSensor(onSensorChangeEventLambda: (SensorEvent?) -> Unit) {
+        val sensorManager = App.instance.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sensorManager.registerListener(object : SensorEventListener2 {
@@ -94,6 +89,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }, magneticSensor, SensorManager.SENSOR_DELAY_UI)
     }
 
+    var mLastAccelerometer: FloatArray = FloatArray(3)
+    var mLastMagnetometer: FloatArray = FloatArray(3)
+    var mR: FloatArray = FloatArray(9)
+    var mI: FloatArray = FloatArray(9)
+    var mOrientation: FloatArray = FloatArray(3)
+    var mLastAccelerometerSet = false
+    var mLastMagnetometerSet = false
 
     val onSensorChangeEventLambda: (SensorEvent?) -> Unit = {
 
@@ -148,18 +150,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
-//    private val successLocationLambda: (Location?) -> Unit = {
-//
-//    }
+    private val successLocationLambda: (Location?) -> Unit = {
+        it?.let {
+            Log.d(TAG, "it latitude: ${it.latitude}")
+            Log.d(TAG, "it longitude: ${it.longitude}")
+            listViewModel.reload(it.latitude, it.longitude)
+        }
+    }
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(p0: LocationResult) {
             for (location in p0.locations) {
-                location?.let {
-                    Log.d(TAG, "it latitude: ${it.latitude}")
-                    Log.d(TAG, "it longitude: ${it.longitude}")
-                    listViewModel.reload(it.latitude, it.longitude)
-                }
+                successLocationLambda(location)
             }
         }
     }
@@ -204,8 +206,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             if (permissionFindLocation == PackageManager.PERMISSION_GRANTED && permissionCoarseLocation == PackageManager.PERMISSION_GRANTED) {
 //                bindLocation()
 //                bindLocation2()
-                Log.d(TAG, "ggggggggggggggggggggg: ")
-                fusedLocationProviderClient = Util.getLocation(locationCallback)
+                fusedLocationProviderClient = Util.getLocation(
+                    locationCallback = locationCallback,
+                    successLocationLambda = successLocationLambda
+                )
             } else {
                 Toast.makeText(this, "위치정보 권한 없습니다.", Toast.LENGTH_SHORT).show()
 //                ActivityCompat.requestPermissions(
@@ -275,7 +279,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun onStart() {
         super.onStart()
         fusedLocationProviderClient?.let {
-            fusedLocationProviderClient = Util.getLocation(locationCallback)
+            fusedLocationProviderClient = Util.getLocation(
+                locationCallback = locationCallback,
+                successLocationLambda = successLocationLambda
+            )
         }
     }
 

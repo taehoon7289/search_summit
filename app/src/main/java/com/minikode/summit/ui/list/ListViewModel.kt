@@ -12,6 +12,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ListViewModel @Inject constructor(private val summitRepository: SummitRepository) :
     ViewModel() {
+
+    private val _azimuth: MutableLiveData<Double> = MutableLiveData(0.0)
+
+    private val azimuth: LiveData<Double>
+        get() = _azimuth
+
     private val _listViewHolderItems: MutableLiveData<MutableList<ListViewHolderVo>> =
         MutableLiveData(
             mutableListOf()

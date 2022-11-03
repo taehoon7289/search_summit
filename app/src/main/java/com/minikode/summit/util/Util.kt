@@ -1,7 +1,9 @@
 package com.minikode.summit.util
 
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Looper
+import android.util.Log
 import com.google.android.gms.location.*
 import com.minikode.summit.App
 import kotlin.math.atan2
@@ -26,7 +28,8 @@ class Util {
 
             val theta = atan2(y, x)
             val bearing = (theta.times(180).div(Math.PI).plus(360)).mod(360.0)
-//            Log.d(TAG, "calBearing: theta $theta")
+            Log.d(TAG, "calBearing: theta $theta")
+            Log.d(TAG, "calBearing: bearing $bearing")
             return bearing
 
 
@@ -48,14 +51,17 @@ class Util {
 
 
         @SuppressLint("MissingPermission")
-        fun getLocation(locationCallback: LocationCallback): FusedLocationProviderClient {
+        fun getLocation(
+            locationCallback: LocationCallback,
+            successLocationLambda: (Location?) -> Unit,
+        ): FusedLocationProviderClient {
             val fusedLocationProviderClient =
                 LocationServices.getFusedLocationProviderClient(App.instance)
             val locationRequest = LocationRequest.create().apply {
                 interval = 5000
                 priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             }
-//            fusedLocationProviderClient.lastLocation.addOnSuccessListener(successLocationLambda)
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener(successLocationLambda)
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
