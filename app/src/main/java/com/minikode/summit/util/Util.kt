@@ -1,9 +1,7 @@
 package com.minikode.summit.util
 
 import android.annotation.SuppressLint
-import android.location.Location
 import android.os.Looper
-import android.util.Log
 import com.google.android.gms.location.*
 import com.minikode.summit.App
 import kotlin.math.atan2
@@ -48,54 +46,22 @@ class Util {
             return ret.roundToLong().toDouble() // 미터 단위
         }
 
-        val updateLocationLambda: (Location?, callback: (Location?) -> Unit) -> Unit =
-            { location, callback ->
-                location?.let {
-                    Log.d(TAG, "updateLocationLambda2: update latitude ${it.latitude}")
-                    Log.d(TAG, "updateLocationLambda2: update longitude ${it.longitude}")
-                    Log.d(TAG, "updateLocationLambda2: update altitude ${it.altitude}")
-                    Log.d(TAG, "updateLocationLambda2: update bearing ${it.bearing}")
-                    callback(it)
-                }
-
-            }
 
         @SuppressLint("MissingPermission")
-        fun getLocation(callback: (Location?) -> Unit) {
+        fun getLocation(locationCallback: LocationCallback): FusedLocationProviderClient {
             val fusedLocationProviderClient =
                 LocationServices.getFusedLocationProviderClient(App.instance)
             val locationRequest = LocationRequest.create().apply {
                 interval = 5000
                 priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             }
-
-//            val builder = LocationSettingsRequest.Builder()
-//                .addLocationRequest(locationRequest)
-//            val client = LocationServices.getSettingsClient(App.instance)
-//            val task = client.checkLocationSettings(builder.build())
-//            task.addOnSuccessListener {
-//                Log.d(TAG, "location client setting success")
-//            }
-//
-//            task.addOnFailureListener {
-//                Log.d(TAG, "location client setting failure")
-//            }
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                updateLocationLambda(it, callback)
-            }
-
+//            fusedLocationProviderClient.lastLocation.addOnSuccessListener(successLocationLambda)
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
-                object : LocationCallback() {
-                    override fun onLocationResult(p0: LocationResult) {
-                        for (location in p0.locations) {
-                            updateLocationLambda(location, callback)
-                        }
-                    }
-                },
+                locationCallback,
                 Looper.getMainLooper()
             )
-
+            return fusedLocationProviderClient
         }
 
         private const val TAG = "Util"

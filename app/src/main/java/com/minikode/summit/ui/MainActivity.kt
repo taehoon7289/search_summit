@@ -15,6 +15,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
 import com.minikode.summit.BaseActivity
 import com.minikode.summit.R
 import com.minikode.summit.databinding.ActivityMainBinding
@@ -143,8 +146,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
     }
 
-    private var latitude2: Double = 0.0
-    private var longitude2: Double = 0.0
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+
+//    private val successLocationLambda: (Location?) -> Unit = {
+//
+//    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(p0: LocationResult) {
+            for (location in p0.locations) {
+                location?.let {
+                    Log.d(TAG, "it latitude: ${it.latitude}")
+                    Log.d(TAG, "it longitude: ${it.longitude}")
+                    listViewModel.reload(it.latitude, it.longitude)
+                }
+            }
+        }
+    }
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -186,13 +204,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             if (permissionFindLocation == PackageManager.PERMISSION_GRANTED && permissionCoarseLocation == PackageManager.PERMISSION_GRANTED) {
 //                bindLocation()
 //                bindLocation2()
-                Util.getLocation {
-                    it?.let {
-                        Log.d(TAG, "callback it: ${it.latitude}")
-                        Log.d(TAG, "callback it: ${it.longitude}")
-                        listViewModel.reload(it.latitude, it.longitude)
-                    }
-                }
+                Log.d(TAG, "ggggggggggggggggggggg: ")
+                fusedLocationProviderClient = Util.getLocation(locationCallback)
             } else {
                 Toast.makeText(this, "위치정보 권한 없습니다.", Toast.LENGTH_SHORT).show()
 //                ActivityCompat.requestPermissions(
@@ -259,6 +272,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 //        }
 //}
 
+    override fun onStart() {
+        super.onStart()
+        fusedLocationProviderClient?.let {
+            fusedLocationProviderClient = Util.getLocation(locationCallback)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        fusedLocationProviderClient?.removeLocationUpdates(locationCallback)
+    }
 
     companion object {
         private const val TAG = "MainActivity"
