@@ -1,4 +1,4 @@
-package com.minikode.summit.ui.list
+package com.minikode.summit.ui.search
 
 import android.util.Log
 import android.view.animation.Animation
@@ -8,27 +8,38 @@ import com.minikode.summit.BaseFragment
 import com.minikode.summit.R
 import com.minikode.summit.databinding.FragmentListBinding
 import com.minikode.summit.ui.MainActivity
-import com.minikode.summit.util.Util
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ListFragment : BaseFragment<FragmentListBinding>() {
+class SearchFragment : BaseFragment<FragmentListBinding>() {
 
     override val layoutRes: Int = R.layout.fragment_list
 
-    private val listViewModel: ListViewModel by activityViewModels()
+    private val searchViewModel: SearchViewModel by activityViewModels()
 
     override fun initView() {
 
-        val listViewAdapter = ListViewAdapter(
+        val searchRecyclerAdapter = SearchRecyclerAdapter(
             clickEventLambda = {
                 Log.d(TAG, "initView: it ${it.mountainName}")
             }
         )
-        binding.recyclerView.adapter = listViewAdapter
-        listViewModel.listViewHolderItems.observe(this@ListFragment) {
+        binding.recyclerView.adapter = searchRecyclerAdapter
+        searchViewModel.listViewHolderItems.observe(this@SearchFragment) {
             Log.d(TAG, "initView: it ${it.size}")
-            listViewAdapter.submitList(it)
+            searchRecyclerAdapter.submitList(it)
+        }
+
+        searchViewModel.azimuth.observe(this@SearchFragment) {
+            Log.d(TAG, "initView: azimuth $it")
+        }
+
+        searchViewModel.pitch.observe(this@SearchFragment) {
+//            Log.d(TAG, "initView: pitch $it")
+        }
+
+        searchViewModel.roll.observe(this@SearchFragment) {
+//            Log.d(TAG, "initView: roll $it")
         }
 
     }

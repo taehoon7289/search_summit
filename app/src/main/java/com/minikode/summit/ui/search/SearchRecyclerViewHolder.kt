@@ -1,11 +1,10 @@
-package com.minikode.summit.ui.list
+package com.minikode.summit.ui.search
 
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.minikode.summit.databinding.ViewholderListBinding
 import com.minikode.summit.vo.ListViewHolderVo
 
-class ListViewHolder(
+class SearchRecyclerViewHolder(
     val binding: ViewholderListBinding,
     val clickEventLambda: (ListViewHolderVo) -> Unit,
 ) :

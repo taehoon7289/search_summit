@@ -1,6 +1,9 @@
 package com.minikode.summit
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -11,10 +14,12 @@ abstract class BaseActivity<View : ViewDataBinding> : AppCompatActivity() {
     protected lateinit var binding: View
     protected abstract val layoutRes: Int
     protected abstract val requestCode: Int
+    protected abstract val permissionArray: Array<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = createBinding(layoutRes)
+        initPermissions()
         initView()
     }
 
@@ -26,6 +31,18 @@ abstract class BaseActivity<View : ViewDataBinding> : AppCompatActivity() {
         return binding
     }
 
+    abstract fun initPermissions()
     abstract fun initView()
+    protected fun startActivityLauncher(intent: Intent, callback: (ActivityResult) -> Unit = {}) {
+        val startActivityLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+                callback(res)
+            }
+        startActivityLauncher.launch(intent)
+    }
+
+    companion object {
+        private const val TAG = "BaseActivity"
+    }
 
 }

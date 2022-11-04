@@ -1,4 +1,4 @@
-package com.minikode.summit.ui.list
+package com.minikode.summit.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.ListAdapter
 import com.minikode.summit.databinding.ViewholderListBinding
 import com.minikode.summit.vo.ListViewHolderVo
 
-class ListViewAdapter(
+class SearchRecyclerAdapter(
     val clickEventLambda: (ListViewHolderVo) -> Unit,
 ) :
-    ListAdapter<ListViewHolderVo, ListViewHolder>(object :
+    ListAdapter<ListViewHolderVo, SearchRecyclerViewHolder>(object :
         DiffUtil.ItemCallback<ListViewHolderVo>() {
         override fun areItemsTheSame(
             oldItem: ListViewHolderVo,
@@ -27,21 +27,21 @@ class ListViewAdapter(
         }
     }) {
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ListViewHolder {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): SearchRecyclerViewHolder {
         val viewholderSummitBinding =
             ViewholderListBinding.inflate(
                 LayoutInflater.from(viewGroup.context),
                 viewGroup,
                 false
             )
-        return ListViewHolder(
+        return SearchRecyclerViewHolder(
             binding = viewholderSummitBinding,
             clickEventLambda = clickEventLambda,
         )
 
     }
 
-    override fun onBindViewHolder(viewHolder: ListViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: SearchRecyclerViewHolder, position: Int) {
         viewHolder.bind(getItem(position), position)
         viewHolder.binding.executePendingBindings()
 

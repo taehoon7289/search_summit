@@ -28,8 +28,8 @@ class Util {
 
             val theta = atan2(y, x)
             val bearing = (theta.times(180).div(Math.PI).plus(360)).mod(360.0)
-            Log.d(TAG, "calBearing: theta $theta")
-            Log.d(TAG, "calBearing: bearing $bearing")
+//            Log.d(TAG, "calBearing: theta $theta")
+//            Log.d(TAG, "calBearing: bearing $bearing")
             return bearing
 
 
@@ -49,26 +49,6 @@ class Util {
             return ret.roundToLong().toDouble() // 미터 단위
         }
 
-
-        @SuppressLint("MissingPermission")
-        fun getLocation(
-            locationCallback: LocationCallback,
-            successLocationLambda: (Location?) -> Unit,
-        ): FusedLocationProviderClient {
-            val fusedLocationProviderClient =
-                LocationServices.getFusedLocationProviderClient(App.instance)
-            val locationRequest = LocationRequest.create().apply {
-                interval = 5000
-                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            }
-            fusedLocationProviderClient.lastLocation.addOnSuccessListener(successLocationLambda)
-            fusedLocationProviderClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
-            )
-            return fusedLocationProviderClient
-        }
 
         private const val TAG = "Util"
     }

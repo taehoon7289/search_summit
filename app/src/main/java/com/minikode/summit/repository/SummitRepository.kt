@@ -30,7 +30,7 @@ class SummitRepository {
         }.toMutableList()
     }
 
-    fun getSummitInfoVoList(): MutableList<SummitInfoVo> = summitInfoVoList
+    fun getSummitInfoVoList() = summitInfoVoList
 
     private fun parseDataJson() {
         val jsonString = App.instance.assets.open("data.json").reader().readText()

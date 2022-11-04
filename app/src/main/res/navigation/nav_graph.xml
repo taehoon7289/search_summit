@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/list_fragment"
-        android:name="com.minikode.summit.ui.list.ListFragment"
+        android:name="com.minikode.summit.ui.search.SearchFragment"
         android:label="ListFragment">
         <!--        <action-->
         <!--            android:id="@+id/main_app_fragment_to_main_alarm_fragment"-->
