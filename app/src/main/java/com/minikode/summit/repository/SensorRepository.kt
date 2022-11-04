@@ -31,7 +31,7 @@ class SensorRepository {
                 Log.d(TAG, "onFlushCompleted: ")
             }
 
-        }, accelerometerSensor, SensorManager.SENSOR_DELAY_UI)
+        }, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
         sensorManager.registerListener(object : SensorEventListener2 {
             override fun onSensorChanged(event: SensorEvent?) {
                 onSensorChangeEventLambda(event)
@@ -45,7 +45,7 @@ class SensorRepository {
                 Log.d(TAG, "onFlushCompleted: ")
             }
 
-        }, magneticSensor, SensorManager.SENSOR_DELAY_UI)
+        }, magneticSensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     companion object {
