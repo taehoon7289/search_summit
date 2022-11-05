@@ -7,7 +7,6 @@ import androidx.fragment.app.activityViewModels
 import com.minikode.summit.BaseFragment
 import com.minikode.summit.R
 import com.minikode.summit.databinding.FragmentListBinding
-import com.minikode.summit.ui.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,11 +26,14 @@ class SearchFragment : BaseFragment<FragmentListBinding>() {
         binding.recyclerView.adapter = searchRecyclerAdapter
         searchViewModel.listViewHolderItems.observe(this@SearchFragment) {
             Log.d(TAG, "initView: it ${it.size}")
+            Log.d(TAG, "initView: it@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ${it.size}")
             searchRecyclerAdapter.submitList(it)
         }
 
+        binding.model = searchViewModel
+
         searchViewModel.azimuth.observe(this@SearchFragment) {
-            Log.d(TAG, "initView: azimuth $it")
+            changeNorthDirection(it)
         }
 
         searchViewModel.pitch.observe(this@SearchFragment) {
@@ -42,21 +44,35 @@ class SearchFragment : BaseFragment<FragmentListBinding>() {
 //            Log.d(TAG, "initView: roll $it")
         }
 
+        searchViewModel.location.observe(this@SearchFragment) {
+            it?.let {
+                Log.d(TAG, "initView: computeListViewHolderVoList $it")
+                searchViewModel.computeListViewHolderVoList(it.latitude, it.longitude)
+            }
+        }
+
     }
 
-    fun changeNorthDirection(azimuth: Double) {
+    var northDegree: Float = 0f
+
+    private fun changeNorthDirection(azimuth: Double) {
         val rotateAnnotation = RotateAnimation(
             -azimuth.toFloat(),
-            (activity as MainActivity).northDegree,
+            northDegree,
             Animation.RELATIVE_TO_SELF, 0.5f,
             Animation.RELATIVE_TO_SELF, 0.5f,
         )
 
-        rotateAnnotation.duration = 250
+        rotateAnnotation.duration = 1000
         rotateAnnotation.fillAfter = true
         binding.imageViewNorthDirection.startAnimation(rotateAnnotation)
-        (activity as MainActivity).northDegree = (-azimuth).toFloat()
+        northDegree = (-azimuth).toFloat()
     }
+
+//    override fun onPause() {
+//        super.onPause()
+//        searchViewModel.stopLocation()
+//    }
 
     companion object {
         private const val TAG = "ListFragment"

@@ -3,9 +3,13 @@ package com.minikode.summit.ui.search
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
+import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.minikode.summit.repository.LocationRepository
 import com.minikode.summit.repository.SensorRepository
 import com.minikode.summit.repository.SummitRepository
 import com.minikode.summit.vo.ListViewHolderVo
@@ -17,6 +21,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val summitRepository: SummitRepository,
     private val sensorRepository: SensorRepository,
+    private val locationRepository: LocationRepository,
 ) :
     ViewModel() {
 
@@ -56,8 +61,20 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private val successLocationLambda: (Location?) -> Unit = {
+        it?.let {
+            Log.d(TAG, "it latitude: ${it.latitude}")
+            Log.d(TAG, "it longitude: ${it.longitude}")
+            _location.value = it
+        }
+    }
+
+    private val fusedLocationProviderClient: FusedLocationProviderClient
+
     init {
         sensorRepository.bindMagneticSensorAndAccelerometerSensor(onSensorChangeEventLambda)
+        fusedLocationProviderClient =
+            locationRepository.getFusedLocationProviderClient(successLocationLambda)
     }
 
     private val _azimuth: MutableLiveData<Double> =
@@ -90,9 +107,19 @@ class SearchViewModel @Inject constructor(
     val summitInfoItems: LiveData<MutableList<SummitInfoVo>>
         get() = _summitInfoItems
 
-    fun reload(latitude: Double, longitude: Double) {
+    fun computeListViewHolderVoList(latitude: Double, longitude: Double) {
         _listViewHolderItems.value = summitRepository.getListViewHolderVoList(latitude, longitude)
     }
+
+    fun stopLocation() {
+        locationRepository.removeLocationUpdate(fusedLocationProviderClient)
+    }
+
+    val location: LiveData<Location>
+        get() = _location
+
+    private val _location: MutableLiveData<Location> = MutableLiveData(null)
+
 
     companion object {
         private const val TAG = "SearchViewModel"

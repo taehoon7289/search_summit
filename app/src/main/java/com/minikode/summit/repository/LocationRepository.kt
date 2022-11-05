@@ -3,32 +3,34 @@ package com.minikode.summit.repository
 import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import com.google.android.gms.location.*
 import com.minikode.summit.App
 
 class LocationRepository {
 
-    private lateinit var location: Location
+//    private var location: Location? = null
 
-    private val successLocationLambda: (Location?) -> Unit = {
-        it?.let {
-            Log.d(TAG, "it latitude: ${it.latitude}")
-            Log.d(TAG, "it longitude: ${it.longitude}")
-            location = it
-        }
-    }
+//    private val successLocationLambda: (Location?) -> Unit = {
+//        it?.let {
+//            Log.d(TAG, "it latitude: ${it.latitude}")
+//            Log.d(TAG, "it longitude: ${it.longitude}")
+//            location = it
+//        }
+//    }
 
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(p0: LocationResult) {
-            for (location in p0.locations) {
-                successLocationLambda(location)
-            }
-        }
-    }
+    private lateinit var locationCallback: LocationCallback
 
     @SuppressLint("MissingPermission")
-    fun getFusedLocationProviderClient(): FusedLocationProviderClient {
+    fun getFusedLocationProviderClient(successLocationLambda: (Location?) -> Unit): FusedLocationProviderClient {
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                for (location in p0.locations) {
+                    successLocationLambda(location)
+                }
+            }
+        }
+
         val fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(App.instance)
         val locationRequest = LocationRequest.create().apply {
@@ -48,7 +50,7 @@ class LocationRepository {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
-    fun getLocation() = location
+//    fun getLocation() = location
 
     companion object {
         private const val TAG = "LocationRepository"

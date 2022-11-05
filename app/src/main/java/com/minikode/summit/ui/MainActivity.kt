@@ -35,8 +35,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
-    var northDegree: Float = 0f
-
 
     private val searchViewModel: SearchViewModel by viewModels()
 
