@@ -127,8 +127,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 //    fun drawArrow() {
 //        for (listViewHolderVo in listViewModel.listViewHolderItems) {
 //            val distance = calDist(latitude2, longitude2, summitInfoVo.lati!!, summitInfoVo.longi!!)
-//            Log.d(Companion.TAG, "parseJson: name: ${summitInfoVo.name}")
-//            Log.d(Companion.TAG, "parseJson: distance ${distance}")
+//            Timber.d("parseJson: name: ${summitInfoVo.name}")
+//            Timber.d("parseJson: distance ${distance}")
 //
 //
 //            var degree = calBearing(
@@ -137,8 +137,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 //                summitInfoVo.lati!!,
 //                summitInfoVo.longi!!,
 //            )
-//            Log.d(
-//                Companion.TAG,
+//            Timber.d(
 //                "parseJson: 현재위치에서 방향 각도 ${
 //                    degree
 //                }"
@@ -148,8 +147,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 ////                degree += 360
 ////            }
 //
-////            Log.d(TAG, "parseJson: currentDegree $currentDegree")
-//            Log.d(Companion.TAG, "parseJson: -------------------------------------")
+////            Timber.d("parseJson: currentDegree $currentDegree")
+//            Timber.d("parseJson: -------------------------------------")
 //
 //            degree += currentDegree // 현재 북쪽으로 각도를 추가
 //
@@ -176,8 +175,4 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 //
 //        }
 //}
-
-    companion object {
-        private const val TAG = "MainActivity"
-    }
 }

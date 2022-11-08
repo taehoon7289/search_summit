@@ -21,6 +21,7 @@ class SummitRepository {
     ): MutableList<ListViewHolderVo> {
         return summitInfoVoList.map {
             val listViewHolderVo = ListViewHolderVo(
+                url = it.url,
                 mountainName = it.mName,
                 summitName = it.sName,
                 distance = Util.calDist(latitude, longitude, it.lati, it.longi).div(1000), // km 단위
@@ -39,9 +40,5 @@ class SummitRepository {
             jsonString,
             object : TypeToken<MutableList<SummitInfoVo>>() {}.type
         )
-    }
-
-    companion object {
-        private const val TAG = "SummitRepository"
     }
 }

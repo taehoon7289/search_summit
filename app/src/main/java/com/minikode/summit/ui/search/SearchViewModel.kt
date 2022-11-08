@@ -15,6 +15,7 @@ import com.minikode.summit.repository.SummitRepository
 import com.minikode.summit.vo.ListViewHolderVo
 import com.minikode.summit.vo.SummitInfoVo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,8 +64,8 @@ class SearchViewModel @Inject constructor(
 
     private val successLocationLambda: (Location?) -> Unit = {
         it?.let {
-            Log.d(TAG, "it latitude: ${it.latitude}")
-            Log.d(TAG, "it longitude: ${it.longitude}")
+            Timber.d("it latitude: ${it.latitude}")
+            Timber.d("it longitude: ${it.longitude}")
             _location.value = it
         }
     }
@@ -119,10 +120,5 @@ class SearchViewModel @Inject constructor(
         get() = _location
 
     private val _location: MutableLiveData<Location> = MutableLiveData(null)
-
-
-    companion object {
-        private const val TAG = "SearchViewModel"
-    }
 
 }

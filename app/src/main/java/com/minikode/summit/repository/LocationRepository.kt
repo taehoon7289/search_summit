@@ -12,8 +12,8 @@ class LocationRepository {
 
 //    private val successLocationLambda: (Location?) -> Unit = {
 //        it?.let {
-//            Log.d(TAG, "it latitude: ${it.latitude}")
-//            Log.d(TAG, "it longitude: ${it.longitude}")
+//            Timber.d("it latitude: ${it.latitude}")
+//            Timber.d("it longitude: ${it.longitude}")
 //            location = it
 //        }
 //    }
@@ -51,8 +51,4 @@ class LocationRepository {
     }
 
 //    fun getLocation() = location
-
-    companion object {
-        private const val TAG = "LocationRepository"
-    }
 }

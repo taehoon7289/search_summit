@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener2
 import android.hardware.SensorManager
 import android.util.Log
 import com.minikode.summit.App
+import timber.log.Timber
 
 class SensorRepository {
 
@@ -24,11 +25,11 @@ class SensorRepository {
             }
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                Log.d(TAG, "onAccuracyChanged: ")
+                Timber.d("onAccuracyChanged: ")
             }
 
             override fun onFlushCompleted(sensor: Sensor?) {
-                Log.d(TAG, "onFlushCompleted: ")
+                Timber.d("onFlushCompleted: ")
             }
 
         }, accelerometerSensor, SensorManager.SENSOR_DELAY_UI)
@@ -38,17 +39,14 @@ class SensorRepository {
             }
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                Log.d(TAG, "onAccuracyChanged: ")
+                Timber.d("onAccuracyChanged: ")
             }
 
             override fun onFlushCompleted(sensor: Sensor?) {
-                Log.d(TAG, "onFlushCompleted: ")
+                Timber.d("onFlushCompleted: ")
             }
 
         }, magneticSensor, SensorManager.SENSOR_DELAY_UI)
     }
 
-    companion object {
-        private const val TAG = "SensorRepository"
-    }
 }

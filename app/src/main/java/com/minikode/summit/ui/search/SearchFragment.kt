@@ -1,18 +1,18 @@
 package com.minikode.summit.ui.search
 
-import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import androidx.fragment.app.activityViewModels
 import com.minikode.summit.BaseFragment
 import com.minikode.summit.R
-import com.minikode.summit.databinding.FragmentListBinding
+import com.minikode.summit.databinding.FragmentSearchBinding
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
-class SearchFragment : BaseFragment<FragmentListBinding>() {
+class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
-    override val layoutRes: Int = R.layout.fragment_list
+    override val layoutRes: Int = R.layout.fragment_search
 
     private val searchViewModel: SearchViewModel by activityViewModels()
 
@@ -20,13 +20,13 @@ class SearchFragment : BaseFragment<FragmentListBinding>() {
 
         val searchRecyclerAdapter = SearchRecyclerAdapter(
             clickEventLambda = {
-                Log.d(TAG, "initView: it ${it.mountainName}")
+                Timber.d("initView: it ${it.mountainName}")
             }
         )
         binding.recyclerView.adapter = searchRecyclerAdapter
         searchViewModel.listViewHolderItems.observe(this@SearchFragment) {
-            Log.d(TAG, "initView: it ${it.size}")
-            Log.d(TAG, "initView: it@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ${it.size}")
+            Timber.d("initView: it ${it.size}")
+            Timber.d("initView: it@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ${it.size}")
             searchRecyclerAdapter.submitList(it)
         }
 
@@ -37,16 +37,16 @@ class SearchFragment : BaseFragment<FragmentListBinding>() {
         }
 
         searchViewModel.pitch.observe(this@SearchFragment) {
-//            Log.d(TAG, "initView: pitch $it")
+//            Timber.d("initView: pitch $it")
         }
 
         searchViewModel.roll.observe(this@SearchFragment) {
-//            Log.d(TAG, "initView: roll $it")
+//            Timber.d("initView: roll $it")
         }
 
         searchViewModel.location.observe(this@SearchFragment) {
             it?.let {
-                Log.d(TAG, "initView: computeListViewHolderVoList $it")
+                Timber.d("initView: computeListViewHolderVoList $it")
                 searchViewModel.computeListViewHolderVoList(it.latitude, it.longitude)
             }
         }
@@ -73,8 +73,4 @@ class SearchFragment : BaseFragment<FragmentListBinding>() {
 //        super.onPause()
 //        searchViewModel.stopLocation()
 //    }
-
-    companion object {
-        private const val TAG = "ListFragment"
-    }
 }

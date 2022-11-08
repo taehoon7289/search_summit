@@ -1,15 +1,10 @@
 package com.minikode.summit.util
 
-import android.annotation.SuppressLint
-import android.location.Location
-import android.os.Looper
-import android.util.Log
-import com.google.android.gms.location.*
-import com.minikode.summit.App
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.roundToLong
 import kotlin.math.sin
+
 
 class Util {
 
@@ -28,8 +23,8 @@ class Util {
 
             val theta = atan2(y, x)
             val bearing = (theta.times(180).div(Math.PI).plus(360)).mod(360.0)
-//            Log.d(TAG, "calBearing: theta $theta")
-//            Log.d(TAG, "calBearing: bearing $bearing")
+//            Timber.d("calBearing: theta $theta")
+//            Timber.d("calBearing: bearing $bearing")
             return bearing
 
 
@@ -49,7 +44,5 @@ class Util {
             return ret.roundToLong().toDouble() // 미터 단위
         }
 
-
-        private const val TAG = "Util"
     }
 }

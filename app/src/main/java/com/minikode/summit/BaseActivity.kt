@@ -41,8 +41,4 @@ abstract class BaseActivity<View : ViewDataBinding> : AppCompatActivity() {
         startActivityLauncher.launch(intent)
     }
 
-    companion object {
-        private const val TAG = "BaseActivity"
-    }
-
 }

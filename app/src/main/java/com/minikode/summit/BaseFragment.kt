@@ -31,8 +31,4 @@ abstract class BaseFragment<V : ViewDataBinding> : Fragment() {
 
     abstract fun initView()
 
-
-    companion object {
-        private const val TAG = "BaseFragment"
-    }
 }

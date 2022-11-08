@@ -1,11 +1,11 @@
 package com.minikode.summit.ui.search
 
 import androidx.recyclerview.widget.RecyclerView
-import com.minikode.summit.databinding.ViewholderListBinding
+import com.minikode.summit.databinding.ViewholderSearchBinding
 import com.minikode.summit.vo.ListViewHolderVo
 
 class SearchRecyclerViewHolder(
-    val binding: ViewholderListBinding,
+    val binding: ViewholderSearchBinding,
     val clickEventLambda: (ListViewHolderVo) -> Unit,
 ) :
     RecyclerView.ViewHolder(binding.root) {
@@ -16,13 +16,9 @@ class SearchRecyclerViewHolder(
             linearLayout.setOnClickListener {
                 clickEventLambda(item)
             }
+
         }
 
     }
-
-    companion object {
-        private const val TAG = "ListViewHolder"
-    }
-
 
 }
