@@ -17,7 +17,8 @@ class SummitRepository {
 
     fun getListViewHolderVoList(
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        azimuth: Double,
     ): MutableList<ListViewHolderVo> {
         return summitInfoVoList.map {
             val listViewHolderVo = ListViewHolderVo(
@@ -25,7 +26,7 @@ class SummitRepository {
                 mountainName = it.mName,
                 summitName = it.sName,
                 distance = Util.calDist(latitude, longitude, it.lati, it.longi).div(1000), // km 단위
-                degree = Util.calBearing(latitude, longitude, it.lati, it.longi)
+                degree = Util.calBearing(latitude, longitude, it.lati, it.longi).plus(azimuth)
             )
             listViewHolderVo
         }.toMutableList()

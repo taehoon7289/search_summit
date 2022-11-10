@@ -20,7 +20,12 @@ class SearchRecyclerAdapter(
     override fun areContentsTheSame(
         oldItem: ListViewHolderVo, newItem: ListViewHolderVo
     ): Boolean {
-        return oldItem.distance == newItem.distance
+
+//        return oldItem.summitName == newItem.summitName
+
+        val condition0 = oldItem.distance == newItem.distance
+        val condition1 = oldItem.degree == newItem.degree
+        return condition0 && condition1
     }
 }) {
 

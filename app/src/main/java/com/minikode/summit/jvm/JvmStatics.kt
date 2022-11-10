@@ -11,12 +11,22 @@ class JvmStatics {
         @JvmStatic
         @BindingAdapter("app:imageUrl")
         fun loadImage(imageView: ImageView, imageUrl: String?) {
-            Glide.with(imageView.context)
-                .load(imageUrl)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .placeholder(R.drawable.image_placeholder)
-                .error(R.drawable.image_404)
-                .into(imageView)
+            if (imageUrl?.isNotEmpty() == true) {
+                Glide.with(imageView.context)
+                    .load(imageUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_404)
+                    .into(imageView)
+            } else {
+                Glide.with(imageView.context)
+                    .load(R.drawable.image_placeholder)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_404)
+                    .into(imageView)
+            }
+
         }
     }
 }

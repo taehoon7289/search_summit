@@ -4,7 +4,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import android.location.Location
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -108,9 +109,9 @@ class SearchViewModel @Inject constructor(
     val summitInfoItems: LiveData<MutableList<SummitInfoVo>>
         get() = _summitInfoItems
 
-    fun computeListViewHolderVoList(latitude: Double, longitude: Double) {
-        _listViewHolderItems.value = summitRepository.getListViewHolderVoList(latitude, longitude)
-    }
+//    fun computeListViewHolderVoList(latitude: Double, longitude: Double) {
+//        _listViewHolderItems.value = summitRepository.getListViewHolderVoList(latitude, longitude)
+//    }
 
     fun stopLocation() {
         locationRepository.removeLocationUpdate(fusedLocationProviderClient)
@@ -120,5 +121,25 @@ class SearchViewModel @Inject constructor(
         get() = _location
 
     private val _location: MutableLiveData<Location> = MutableLiveData(null)
+
+    var isLoading = false
+
+    fun computeListViewHolderVoList() {
+        location.value?.let {
+            if (!isLoading) {
+                isLoading = true
+                Handler(Looper.getMainLooper()).postDelayed({
+                    _listViewHolderItems.value =
+                        summitRepository.getListViewHolderVoList(
+                            it.latitude,
+                            it.longitude,
+                            azimuth.value!!
+                        )
+                    isLoading = false
+                }, 1000)
+            }
+
+        }
+    }
 
 }

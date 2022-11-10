@@ -18,15 +18,20 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     override fun initView() {
 
-        val searchRecyclerAdapter = SearchRecyclerAdapter(
-            clickEventLambda = {
-                Timber.d("initView: it ${it.mountainName}")
+        searchViewModel.location.observe(this@SearchFragment) {
+            it?.let {
+                Timber.d("initView: computeListViewHolderVoList $it")
+                searchViewModel.computeListViewHolderVoList()
             }
-        )
+        }
+
+        val searchRecyclerAdapter = SearchRecyclerAdapter(clickEventLambda = {
+            Timber.d("initView: it ${it.mountainName}")
+        })
+
         binding.recyclerView.adapter = searchRecyclerAdapter
+        binding.recyclerView.itemAnimator = null
         searchViewModel.listViewHolderItems.observe(this@SearchFragment) {
-            Timber.d("initView: it ${it.size}")
-            Timber.d("initView: it@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ${it.size}")
             searchRecyclerAdapter.submitList(it)
         }
 
@@ -34,6 +39,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
         searchViewModel.azimuth.observe(this@SearchFragment) {
             changeNorthDirection(it)
+            searchViewModel.computeListViewHolderVoList()
         }
 
         searchViewModel.pitch.observe(this@SearchFragment) {
@@ -44,12 +50,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 //            Timber.d("initView: roll $it")
         }
 
-        searchViewModel.location.observe(this@SearchFragment) {
-            it?.let {
-                Timber.d("initView: computeListViewHolderVoList $it")
-                searchViewModel.computeListViewHolderVoList(it.latitude, it.longitude)
-            }
-        }
 
     }
 
