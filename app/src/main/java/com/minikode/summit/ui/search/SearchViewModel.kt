@@ -124,6 +124,12 @@ class SearchViewModel @Inject constructor(
 
     var isLoading = false
 
+
+    val maxDistance: LiveData<Double>
+        get() = _maxDistance
+
+    private val _maxDistance: MutableLiveData<Double> = MutableLiveData(20.0)
+
     fun computeListViewHolderVoList() {
         location.value?.let {
             if (!isLoading) {
@@ -134,7 +140,9 @@ class SearchViewModel @Inject constructor(
                             it.latitude,
                             it.longitude,
                             azimuth.value!!
-                        )
+                        ).filter {
+                            it.distance <= maxDistance.value!!
+                        }.sortedBy { it.distance }.toMutableList()
                     isLoading = false
                 }, 1000)
             }

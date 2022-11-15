@@ -6,6 +6,7 @@ import com.minikode.summit.App
 import com.minikode.summit.util.Util
 import com.minikode.summit.vo.ListViewHolderVo
 import com.minikode.summit.vo.SummitInfoVo
+import timber.log.Timber
 
 class SummitRepository {
 
@@ -15,21 +16,39 @@ class SummitRepository {
         parseDataJson()
     }
 
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+
     fun getListViewHolderVoList(
         latitude: Double,
         longitude: Double,
         azimuth: Double,
     ): MutableList<ListViewHolderVo> {
-        return summitInfoVoList.map {
+        val listViewHolderVoList = summitInfoVoList.map {
             val listViewHolderVo = ListViewHolderVo(
                 url = it.url,
                 mountainName = it.mName,
                 summitName = it.sName,
                 distance = Util.calDist(latitude, longitude, it.lati, it.longi).div(1000), // km 단위
-                degree = Util.calBearing(latitude, longitude, it.lati, it.longi).plus(azimuth)
+                degree = Util.calBearing(latitude, longitude, it.lati, it.longi).plus(azimuth),
+                oldDegree = Util.calBearing(
+                    this@SummitRepository.latitude,
+                    this@SummitRepository.longitude,
+                    it.lati,
+                    it.longi
+                ).plus(azimuth),
             )
+
+            Timber.d("degree ${listViewHolderVo.degree} oldDegree ${listViewHolderVo.oldDegree}")
             listViewHolderVo
         }.toMutableList()
+        this.latitude = latitude
+        this.longitude = longitude
+
+        Timber.d("111 latitude $latitude")
+        Timber.d("111 longitude $longitude")
+
+        return listViewHolderVoList
     }
 
     fun getSummitInfoVoList() = summitInfoVoList
@@ -38,8 +57,7 @@ class SummitRepository {
         val jsonString = App.instance.assets.open("data.json").reader().readText()
         val gson = Gson()
         summitInfoVoList = gson.fromJson(
-            jsonString,
-            object : TypeToken<MutableList<SummitInfoVo>>() {}.type
+            jsonString, object : TypeToken<MutableList<SummitInfoVo>>() {}.type
         )
     }
 }
