@@ -128,7 +128,7 @@ class SearchViewModel @Inject constructor(
     val maxDistance: LiveData<Double>
         get() = _maxDistance
 
-    private val _maxDistance: MutableLiveData<Double> = MutableLiveData(200.0)
+    private val _maxDistance: MutableLiveData<Double> = MutableLiveData(20.0)
 
     fun computeListViewHolderVoList() {
         location.value?.let {
