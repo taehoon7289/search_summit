@@ -128,7 +128,7 @@ class SearchViewModel @Inject constructor(
     val maxDistance: LiveData<Double>
         get() = _maxDistance
 
-    private val _maxDistance: MutableLiveData<Double> = MutableLiveData(20.0)
+    private val _maxDistance: MutableLiveData<Double> = MutableLiveData(200.0)
 
     fun computeListViewHolderVoList() {
         location.value?.let {
@@ -142,7 +142,9 @@ class SearchViewModel @Inject constructor(
                             azimuth.value!!
                         ).filter {
                             it.distance <= maxDistance.value!!
-                        }.sortedBy { it.distance }.toMutableList()
+                        }.sortedBy { it.distance }.onEach {
+                            Timber.d("${it.mountainName} it.degree ${it.degree}")
+                        }.toMutableList()
                     isLoading = false
                 }, 1000)
             }

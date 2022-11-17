@@ -13,38 +13,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/text_view_location"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linear_layout_location"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{@string/location_title + ` : ` + model.location.latitude + ` ` + model.location.longitude}"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/image_view_north_direction"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@id/recycler_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/text_view_north_direction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{@string/north_direction_title + ` : ` + model.azimuth}"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/image_view_north_direction"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_view_location" />
+            <TextView
+                android:id="@+id/text_view_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{@string/location_title + ` : ` + model.location.latitude + `, ` + model.location.longitude}"
+                android:textSize="20sp" />
 
-        <ImageView
-            android:id="@+id/image_view_north_direction"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/north_direction"
-            app:layout_constraintBottom_toTopOf="@id/linear_layout_location"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_view_north_direction" />
+            <TextView
+                android:id="@+id/text_view_north_direction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{@string/north_direction_title + ` : ` + model.azimuth}"
+                android:textSize="20sp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/image_view_north_direction"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/north_direction" />
+
+        </LinearLayout>
+
 
         <!--        <LinearLayout-->
         <!--            android:id="@+id/linear_layout_temp"-->
@@ -73,25 +79,25 @@
 
         <!--        </LinearLayout>-->
 
-        <LinearLayout
-            android:id="@+id/linear_layout_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/recycler_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image_view_north_direction">
+        <!--        <LinearLayout-->
+        <!--            android:id="@+id/linear_layout_location"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            app:layout_constraintBottom_toTopOf="@id/recycler_view"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/image_view_north_direction">-->
 
-            <TextView
-                android:id="@+id/text_view_lati"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+        <!--            <TextView-->
+        <!--                android:id="@+id/text_view_lati"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content" />-->
 
-            <TextView
-                android:id="@+id/text_view_longi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+        <!--            <TextView-->
+        <!--                android:id="@+id/text_view_longi"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content" />-->
+        <!--        </LinearLayout>-->
 
 
         <androidx.recyclerview.widget.RecyclerView

@@ -30,7 +30,7 @@ class SummitRepository {
                 mountainName = it.mName,
                 summitName = it.sName,
                 distance = Util.calDist(latitude, longitude, it.lati, it.longi).div(1000), // km 단위
-                degree = Util.calBearing(latitude, longitude, it.lati, it.longi).plus(azimuth),
+                degree = Util.calBearing(latitude, longitude, it.lati, it.longi).minus(azimuth),
                 oldDegree = Util.calBearing(
                     this@SummitRepository.latitude,
                     this@SummitRepository.longitude,
@@ -39,7 +39,7 @@ class SummitRepository {
                 ).plus(azimuth),
             )
 
-            Timber.d("degree ${listViewHolderVo.degree} oldDegree ${listViewHolderVo.oldDegree}")
+//            Timber.d("degree ${listViewHolderVo.degree} oldDegree ${listViewHolderVo.oldDegree}")
             listViewHolderVo
         }.toMutableList()
         this.latitude = latitude
