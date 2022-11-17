@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">summit</string>
+    <string name="north_direction_title">방위각</string>
+    <string name="location_title">위치</string>
 </resources>

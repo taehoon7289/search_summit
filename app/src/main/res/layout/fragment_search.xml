@@ -13,6 +13,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/text_view_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{@string/location_title + ` : ` + model.location.latitude + ` ` + model.location.longitude}"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@id/image_view_north_direction"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/text_view_north_direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{@string/north_direction_title + ` : ` + model.azimuth}"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@id/image_view_north_direction"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_view_location" />
+
         <ImageView
             android:id="@+id/image_view_north_direction"
             android:layout_width="100dp"
@@ -21,34 +44,34 @@
             app:layout_constraintBottom_toTopOf="@id/linear_layout_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/text_view_north_direction" />
 
-        <LinearLayout
-            android:id="@+id/linear_layout_temp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@id/linear_layout_location"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image_view_north_direction">
+        <!--        <LinearLayout-->
+        <!--            android:id="@+id/linear_layout_temp"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:orientation="vertical"-->
+        <!--            app:layout_constraintBottom_toTopOf="@id/linear_layout_location"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/image_view_north_direction">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{model.azimuth.toString()}" />
+        <!--            <TextView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@{model.azimuth.toString()}" />-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{model.pitch.toString()}" />
+        <!--            <TextView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@{model.pitch.toString()}" />-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{model.roll.toString()}" />
+        <!--            <TextView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@{model.roll.toString()}" />-->
 
-        </LinearLayout>
+        <!--        </LinearLayout>-->
 
         <LinearLayout
             android:id="@+id/linear_layout_location"
@@ -57,7 +80,7 @@
             app:layout_constraintBottom_toTopOf="@id/recycler_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/linear_layout_temp">
+            app:layout_constraintTop_toBottomOf="@id/image_view_north_direction">
 
             <TextView
                 android:id="@+id/text_view_lati"

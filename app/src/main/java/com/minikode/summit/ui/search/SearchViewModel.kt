@@ -71,12 +71,12 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private val fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     init {
         sensorRepository.bindMagneticSensorAndAccelerometerSensor(onSensorChangeEventLambda)
-        fusedLocationProviderClient =
-            locationRepository.getFusedLocationProviderClient(successLocationLambda)
+//        fusedLocationProviderClient =
+//            locationRepository.getFusedLocationProviderClient(successLocationLambda)
     }
 
     private val _azimuth: MutableLiveData<Double> =
@@ -148,6 +148,11 @@ class SearchViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun initFusedLocationProviderClient() {
+        fusedLocationProviderClient =
+            locationRepository.getFusedLocationProviderClient(successLocationLambda)
     }
 
 }

@@ -1,9 +1,6 @@
 package com.minikode.summit.util
 
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.roundToLong
-import kotlin.math.sin
+import kotlin.math.*
 
 
 class Util {
@@ -42,6 +39,12 @@ class Util {
             val ret = EARTH_R * Math.acos(distance)
 
             return ret.roundToLong().toDouble() // 미터 단위
+        }
+
+        fun getColorWithAlpha(alpha: Float, baseColor: Int): Int {
+            val a = min(255, max(0, (alpha * 255).toInt())) shl 24
+            val rgb = 0x00ffffff and baseColor
+            return a.plus(rgb)
         }
 
     }

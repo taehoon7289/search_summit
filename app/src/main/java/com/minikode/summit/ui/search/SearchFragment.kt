@@ -18,6 +18,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>() {
 
     override fun initView() {
 
+        Timber.d("initView@@@@@@@@@@@@@@@@@@")
+
         searchViewModel.location.observe(this@SearchFragment) {
             it?.let {
                 Timber.d("initView: computeListViewHolderVoList $it")

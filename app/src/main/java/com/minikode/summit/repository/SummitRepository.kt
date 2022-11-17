@@ -59,5 +59,6 @@ class SummitRepository {
         summitInfoVoList = gson.fromJson(
             jsonString, object : TypeToken<MutableList<SummitInfoVo>>() {}.type
         )
+        Timber.d("parseDataJson init!!!!!!!!")
     }
 }

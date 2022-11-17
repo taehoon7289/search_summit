@@ -9,58 +9,72 @@
             type="com.minikode.summit.vo.ListViewHolderVo" />
     </data>
 
-    <LinearLayout
-        android:id="@+id/linear_layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        android:weightSum="5">
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
 
         <ImageView
             android:id="@+id/image_view_mountain_image"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:scaleType="centerInside"
-            app:imageUrl="@{model.url}" />
-
-        <TextView
-            android:id="@+id/text_view_mountain_name"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.5"
-            android:text="@{model.mountainName}"
-            android:textSize="16sp" />
+            app:imageUrl="@{model.url}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/linear_layout_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:id="@+id/linear_layout_text"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2.5">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/image_view_mountain_direction"
+            app:layout_constraintStart_toEndOf="@id/image_view_mountain_image"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/text_view_mountain_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@{model.mountainName}"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/text_view_summit_name"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@{model.summitName}"
                 android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/text_view_distance"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(model.distance)}"
+                android:gravity="center"
+                android:text="@{String.valueOf(model.distance) + `Km`}"
                 android:textSize="12sp" />
-
-            <ImageView
-                android:id="@+id/image_view_mountain_direction"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ic_action_arrow" />
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/image_view_mountain_direction"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_arrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/linear_layout_text"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
