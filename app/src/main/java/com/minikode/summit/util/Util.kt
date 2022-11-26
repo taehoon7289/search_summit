@@ -14,7 +14,7 @@ class Util {
             val lambda1 = lon1.times(Math.PI).div(180)
             val lambda2 = lon2.times(Math.PI).div(180)
 
-            val y = sin(lambda2.minus(lambda1)).times(Math.cos(pi2))
+            val y = sin(lambda2.minus(lambda1)).times(cos(pi2))
             val x = cos(pi1).times(sin(pi2))
                 .minus((sin(pi1).times(cos(pi2).times(cos(lambda2.minus(lambda1))))))
 

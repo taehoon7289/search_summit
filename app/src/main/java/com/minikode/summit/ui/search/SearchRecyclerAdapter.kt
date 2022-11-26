@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.minikode.summit.databinding.ViewholderSearchBinding
 import com.minikode.summit.vo.ListViewHolderVo
+import timber.log.Timber
 
 class SearchRecyclerAdapter(
     val clickEventLambda: (ListViewHolderVo) -> Unit,
@@ -37,13 +38,11 @@ class SearchRecyclerAdapter(
             binding = viewholderSummitBinding,
             clickEventLambda = clickEventLambda,
         )
-
     }
 
     override fun onBindViewHolder(viewHolder: SearchRecyclerViewHolder, position: Int) {
         viewHolder.bind(getItem(position), position)
         viewHolder.binding.executePendingBindings()
-
     }
 
 }
